@@ -1,0 +1,51 @@
+package org.firstinspires.ftc.teamcode.samples;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+@TeleOp(name="Mecanum", group="Linear Opmode")
+@Disabled
+public class Mecanum extends LinearOpMode {
+
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor rightmotor;
+    private DcMotor backrightmotor;
+    private DcMotor leftmotor;
+    private DcMotor backleftmotor;
+
+
+    @Override
+    public void runOpMode() {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        rightmotor = hardwareMap.dcMotor.get("Rightmotor");
+        backrightmotor = hardwareMap.dcMotor.get("Backrightmotor");
+        leftmotor = hardwareMap.dcMotor.get("Leftmotor");
+        backleftmotor = hardwareMap.dcMotor.get("Backleftmotor");
+
+        rightmotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backrightmotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        waitForStart();
+        runtime.reset();
+
+        while (opModeIsActive() && !isStopRequested() ) {
+
+            rightmotor.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x);
+            backrightmotor.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x - 2*gamepad1.right_stick_x);
+            leftmotor.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x - 2*gamepad1.right_stick_x);
+            backleftmotor.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x);
+
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.update();
+        }
+    }
+}
