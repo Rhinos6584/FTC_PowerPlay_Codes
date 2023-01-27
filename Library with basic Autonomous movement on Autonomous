@@ -1,0 +1,311 @@
+package org.firstinspires.ftc.teamcode;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.View;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+@Autonomous(name="Robot", group="Robot")
+@Disabled
+public class Robot extends LinearOpMode {
+
+    private int leftPos;
+    private int rightPos;
+
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor rightmotor;
+    private DcMotor backrightmotor;
+    private DcMotor leftmotor;
+    private DcMotor backleftmotor;
+
+    private DcMotor elevador1;
+    private DcMotor elevador2;
+
+    Servo servo1;
+    Servo servo2;
+    Servo seguro;
+
+    NormalizedColorSensor colorSensor;
+
+    double repetir = 0;
+    double zone = 1;
+
+    @Override
+    public void runOpMode() {
+
+        rightmotor = hardwareMap.dcMotor.get("Rightmotor");
+        backrightmotor = hardwareMap.dcMotor.get("Backrightmotor");
+        leftmotor = hardwareMap.dcMotor.get("Leftmotor");
+        backleftmotor = hardwareMap.dcMotor.get("Backleftmotor");
+
+        elevador1 = hardwareMap.dcMotor.get("elevador1");
+        elevador2 = hardwareMap.dcMotor.get("elevador2");
+
+        servo1 = hardwareMap.servo.get("servo1");
+        servo2 = hardwareMap.servo.get("servo2");
+        seguro = hardwareMap.servo.get("seguro");
+
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "ColorSensor");
+
+        leftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftmotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backleftmotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        elevador2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftPos = 0;
+        rightPos = 0;
+
+    }
+
+    public Robot(DcMotor rightmotor, DcMotor leftmotor, DcMotor backrightmotor, DcMotor backleftmotor){
+        this.rightmotor = rightmotor;
+        this.leftmotor = leftmotor;
+        this.backrightmotor = backrightmotor;
+        this.backleftmotor = backleftmotor;
+    }
+
+    public void atras(double potencia, int pulsos){
+
+        rightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rightmotor.setTargetPosition(-pulsos);
+        leftmotor.setTargetPosition(-pulsos);
+        backrightmotor.setTargetPosition(-pulsos);
+        backleftmotor.setTargetPosition(-pulsos);
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftmotor.setPower(potencia);
+        rightmotor.setPower(potencia);
+        backleftmotor.setPower(potencia);
+        backrightmotor.setPower(potencia);
+
+        while(rightmotor.isBusy() && leftmotor.isBusy() && backrightmotor.isBusy() && backleftmotor.isBusy()){
+
+            idle();
+
+        }
+
+        parar();
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    public void adelante(double potencia, int pulsos){
+
+        rightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rightmotor.setTargetPosition(pulsos);
+        leftmotor.setTargetPosition(pulsos);
+        backrightmotor.setTargetPosition(pulsos);
+        backleftmotor.setTargetPosition(pulsos);
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftmotor.setPower(potencia);
+        rightmotor.setPower(potencia);
+        backleftmotor.setPower(potencia);
+        backrightmotor.setPower(potencia);
+
+        while(rightmotor.isBusy() && leftmotor.isBusy() && backrightmotor.isBusy() && backleftmotor.isBusy()){
+
+            idle();
+
+        }
+
+        parar();
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    public void girarIzq(double potencia, int pulsos){
+
+        rightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rightmotor.setTargetPosition(pulsos);
+        leftmotor.setTargetPosition(-pulsos);
+        backrightmotor.setTargetPosition(pulsos);
+        backleftmotor.setTargetPosition(-pulsos);
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftmotor.setPower(potencia);
+        rightmotor.setPower(potencia);
+        backleftmotor.setPower(potencia);
+        backrightmotor.setPower(potencia);
+
+        while(rightmotor.isBusy() && leftmotor.isBusy() && backrightmotor.isBusy() && backleftmotor.isBusy()){
+
+            idle();
+
+        }
+
+        parar();
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    public void girarDer(double potencia, int pulsos){
+
+        rightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rightmotor.setTargetPosition(-pulsos);
+        leftmotor.setTargetPosition(pulsos);
+        backrightmotor.setTargetPosition(-pulsos);
+        backleftmotor.setTargetPosition(pulsos);
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftmotor.setPower(potencia);
+        rightmotor.setPower(potencia);
+        backleftmotor.setPower(potencia);
+        backrightmotor.setPower(potencia);
+
+        while(rightmotor.isBusy() && leftmotor.isBusy() && backrightmotor.isBusy() && backleftmotor.isBusy()){
+
+            idle();
+
+        }
+
+        parar();
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    public void MecanoIzq(double potencia, int pulsos){
+
+        rightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rightmotor.setTargetPosition(pulsos);
+        leftmotor.setTargetPosition(-pulsos);
+        backrightmotor.setTargetPosition(-pulsos);
+        backleftmotor.setTargetPosition(pulsos);
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftmotor.setPower(potencia);
+        rightmotor.setPower(potencia);
+        backleftmotor.setPower(potencia);
+        backrightmotor.setPower(potencia);
+
+        while(rightmotor.isBusy() && leftmotor.isBusy() && backrightmotor.isBusy() && backleftmotor.isBusy()){
+
+            idle();
+
+        }
+
+        parar();
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    public void MecanoDer(double potencia, int pulsos){
+
+        rightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rightmotor.setTargetPosition(-pulsos);
+        leftmotor.setTargetPosition(pulsos);
+        backrightmotor.setTargetPosition(pulsos);
+        backleftmotor.setTargetPosition(-pulsos);
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftmotor.setPower(potencia);
+        rightmotor.setPower(potencia);
+        backleftmotor.setPower(potencia);
+        backrightmotor.setPower(potencia);
+
+        while(rightmotor.isBusy() && leftmotor.isBusy() && backrightmotor.isBusy() && backleftmotor.isBusy()){
+
+            idle();
+
+        }
+
+        parar();
+
+        rightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backrightmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backleftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
+    public void parar(){
+        leftmotor.setPower(0);
+        rightmotor.setPower(0);
+        backleftmotor.setPower(0);
+        backrightmotor.setPower(0);
+    }
+}
